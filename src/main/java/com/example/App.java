@@ -1,89 +1,105 @@
 package com.example;
 
-import com.example.interfaces.Input;
 import com.example.interfaces.Service;
-import com.example.model.Game;
-import com.example.model.Genre;
-import com.example.model.Studio;
+import com.example.interfaces.Input;
 import com.example.model.User;
+import com.example.model.Game;
+import com.example.model.Purchase;
+import java.util.Scanner;
 
 public class App implements Input {
 
     private final Service<Game> gameService;
-    private final Service<Studio> studioService;
-    private final Service<Genre> genreService;
     private final Service<User> userService;
+    private final Service<Purchase> purchaseService;
+    private final Scanner scanner = new Scanner(System.in);
 
-    public App(Service<Game> gameService, Service<Studio> studioService, Service<Genre> genreService, Service<User> userService) {
-        this.gameService = gameService;
-        this.studioService = studioService;
-        this.genreService = genreService;
+    public App(Service<Game> gamService, Service<User> userService, Service<Purchase> purchaseService) {
+        this.gameService = gamService;
         this.userService = userService;
+        this.purchaseService = purchaseService;
     }
 
     public void run() {
-        System.out.println("Welcome to the game store!");
-        boolean repeat = true;
-        do{
-            System.out.println("List of options:");
-            System.out.println("0. Exit");
-            System.out.println("1. Add a game");
-            System.out.println("2. Add a studio");
-            System.out.println("3. Add a genre");
-            System.out.println("4. Add a user");
-            System.out.println("5. List games");
+        System.out.println("------ Магазин спортивного инвентаря группы NPTV23 ------");
+        System.out.println("-------------------------------------------------------");
 
-            System.out.println("Enter the number of the option: ");
-            int task = Integer.parseInt(getString());
+        boolean repeat = true;
+        do {
+            displayMenu();
+
+            System.out.print("Введите номер задачи: ");
+            int task = Integer.parseInt(getInput());
             switch (task) {
                 case 0:
                     repeat = false;
                     break;
                 case 1:
-                    System.out.println("Adding a game");
-
-                    if (gameService.add()) {
-                        System.out.println("Game added successfully");
-                    }else{
-                        System.out.println("Error adding the game");
-                    }
+                    System.out.println("----- Добавление продукта -----");
+                    gameService.add();
                     break;
                 case 2:
-                    System.out.println("Adding a studio");
-
-                    if (studioService.add()) {
-                        System.out.println("Studio added successfully");
-                    }else{
-                        System.out.println("Error adding the studio");
-                    }
-                    break;
-                case 3:
-                    System.out.println("Adding a genre");
-
-                    if (genreService.add()) {
-                        System.out.println("Genre added successfully");
-                    }else{
-                        System.out.println("Error adding the genre");
-                    }
-                    break;
-                case 4:
-                    System.out.println("Adding a user");
-
-                    if (userService.add()) {
-                        System.out.println("User added successfully");
-                    }else{
-                        System.out.println("Error adding the user");
-                    }
-                    break;
-                case 5:
-                    System.out.println("Listing games");
+                    System.out.println("----- Список продуктов -----");
                     gameService.print();
                     break;
+                case 3:
+                    System.out.println("----- Редактирование продукта -----");
+                    gameService.edit(null); // Assuming the service handles the selection and editing
+                    break;
+                case 4:
+                    System.out.println("----- Удаление товара -----");
+                    gameService.remove(null); // Assuming the service handles the selection and removal
+                    break;
+                case 5:
+                    System.out.println("----- Добавление клиента -----");
+                    userService.add();
+                    break;
+                case 6:
+                    System.out.println("----- Список клиентов -----");
+                    userService.print();
+                    break;
+                case 7:
+                    System.out.println("----- Редактирование клиента -----");
+                    userService.edit(null); // Assuming the service handles the selection and editing
+                    break;
+                case 8:
+                    System.out.println("----- Удаление клиента -----");
+                    userService.remove(null); // Assuming the service handles the selection and removal
+                    break;
+                case 9:
+                    System.out.println("----- Покупка товара -----");
+                    purchaseService.add();
+                    break;
+                case 10:
+                    System.out.println("----- Список приобретенных товаров -----");
+                    purchaseService.print();
+                    break;
                 default:
-                    System.out.println("Invalid option");
+                    System.out.println("Выберите задачу из списка!");
             }
-        }while(repeat);
-        System.out.println("Goodbye!");
+            System.out.println("-------------------------------------------------------");
+        } while (repeat);
+
+        System.out.println("До свидания :)");
     }
 
+    private void displayMenu() {
+        System.out.println("Список задач: ");
+        System.out.println("0. Выйти из программы");
+        System.out.println("1. Добавить продукт");
+        System.out.println("2. Список продуктов");
+        System.out.println("3. Редактировать продукт");
+        System.out.println("4. Удалить товар");
+        System.out.println("5. Добавить клиента");
+        System.out.println("6. Список клиентов");
+        System.out.println("7. Редактировать клиента");
+        System.out.println("8. Удалить клиента");
+        System.out.println("9. Купить товар");
+        System.out.println("10. Список приобретенных товаров");
+    }
+
+    @Override
+    public String getInput() {
+        return scanner.nextLine();
+    }
 }

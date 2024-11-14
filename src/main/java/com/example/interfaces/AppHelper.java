@@ -4,5 +4,6 @@ import java.util.List;
 
 public interface AppHelper<T> {
     T create();
-    boolean printList(List<T> elements);
+    void printList(List<T> elements);
+    FileRepository<T> getRepository();
 }

@@ -1,106 +1,92 @@
 package services;
 
 import com.example.model.Game;
-import com.example.interfaces.AppHelper;
-import com.example.interfaces.FileRepository;
 import com.example.services.GameService;
+import com.example.interfaces.AppHelper;
+import com.example.interfaces.Input;
+import com.example.interfaces.FileRepository;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTest {
-
-    @Mock
-    private AppHelper<Game> appHelperGameMock;
-
-    @Mock
-    private FileRepository<Game> storageMock;
-
     private GameService gameService;
+    private List<Game> games;
+    private AppHelper<Game> mockAppHelperGame;
+    private Input mockInputProvider;
+    private FileRepository<Game> mockGameRepository;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        gameService = new GameService(appHelperGameMock, storageMock);
+        games = mock(List.class);
+        mockAppHelperGame = mock(AppHelper.class);
+        mockInputProvider = mock(Input.class);
+        mockGameRepository = mock(FileRepository.class);
+
+        gameService = new GameService(games, mockAppHelperGame, mockInputProvider, mockGameRepository);
     }
 
     @Test
     public void testAdd_Success() {
-        Game game = new Game();
-        when(appHelperGameMock.create()).thenReturn(game);
-        doNothing().when(storageMock).save(game, "games.txt");
+        Game newGame = new Game();
+        when(mockAppHelperGame.create()).thenReturn(newGame);
 
         boolean result = gameService.add();
 
         assertTrue(result);
-        verify(appHelperGameMock, times(1)).create();
-        verify(storageMock, times(1)).save(game, "games.txt");
+        verify(games).add(newGame);
+        verify(mockGameRepository).save(games);
     }
 
     @Test
-    public void testAdd_GameIsNull() {
-        when(appHelperGameMock.create()).thenReturn(null);
+    public void testAdd_Failure() {
+        when(mockAppHelperGame.create()).thenReturn(null);
 
         boolean result = gameService.add();
 
         assertFalse(result);
-        verify(appHelperGameMock, times(1)).create();
-        verifyNoInteractions(storageMock);
-    }
-
-    @Test
-    public void testAdd_ExceptionThrown() {
-        when(appHelperGameMock.create()).thenThrow(new RuntimeException("Creation failed"));
-
-        boolean result = gameService.add();
-
-        assertFalse(result);
-        verify(appHelperGameMock, times(1)).create();
-        verifyNoInteractions(storageMock);
+        verify(games, never()).add(any(Game.class));
+        verify(mockGameRepository, never()).save(anyList());
     }
 
     @Test
     public void testPrint() {
-        Game game1 = new Game();
-        game1.setTitle("Game 1");
-        Game game2 = new Game();
-        game2.setTitle("Game 2");
-        List<Game> games = Arrays.asList(game1, game2);
+        gameService.print();
 
-        when(storageMock.load("games.txt")).thenReturn(games);
-        when(appHelperGameMock.printList(games)).thenReturn(true);
-
-        boolean result = gameService.print();
-
-        assertTrue(result);
-        verify(storageMock, times(1)).load("games.txt");
-        verify(appHelperGameMock, times(1)).printList(games);
+        verify(mockAppHelperGame).printList(games);
     }
 
     @Test
     public void testList() {
-        Game game1 = new Game();
-        game1.setTitle("Game 1");
-        Game game2 = new Game();
-        game2.setTitle("Game 2");
-        List<Game> games = Arrays.asList(game1, game2);
-
-        when(storageMock.load("games.txt")).thenReturn(games);
+        List<Game> loadedGames = Arrays.asList(new Game(), new Game());
+        when(mockGameRepository.load()).thenReturn(loadedGames);
 
         List<Game> result = gameService.list();
 
-        assertEquals(2, result.size());
-        assertEquals("Game 1", result.get(0).getTitle());
-        assertEquals("Game 2", result.get(1).getTitle());
-        verify(storageMock, times(1)).load("games.txt");
+        assertEquals(loadedGames, result);
+    }
+
+    @Test
+    public void testEdit() {
+        Game game = new Game();
+
+        boolean result = gameService.edit(game);
+
+        assertFalse(result); // Since edit is not implemented
+    }
+
+    @Test
+    public void testRemove() {
+        Game game = new Game();
+
+        boolean result = gameService.remove(game);
+
+        assertFalse(result); // Since remove is not implemented
     }
 }

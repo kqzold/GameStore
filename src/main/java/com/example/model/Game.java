@@ -1,28 +1,28 @@
 package com.example.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class Game {
+public class Game implements Serializable {
     private UUID id;
-    private String title;
-    private List<Studio> studios = new ArrayList<>();
-    private int publishedYear;
-    private List<Genre> genres = new ArrayList<>();
+    private String name;
+    private List<String> genres = new ArrayList<>();
     private double price;
+    private List<String> studios = new ArrayList<>();
 
     public Game() {
         this.id = UUID.randomUUID();
     }
 
-    public Game (String title, List<Studio> studios, int publishedYear, double price) {
+    public Game(String name, List<String> genres, double price, List<String> studios) {
         this.id = UUID.randomUUID();
-        this.title = title;
-        this.studios = studios;
-        this.publishedYear = publishedYear;
+        this.name = name;
+        this.genres = genres;
         this.price = price;
+        this.studios = studios;
     }
 
     public UUID getId() {
@@ -33,71 +33,65 @@ public class Game {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public List<Studio> getStudios() {
-        return studios;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public int getPublishedYear() {
-        return publishedYear;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setStudios(List<Studio> studios) {
-        this.studios = studios;
-    }
-
-    public void setPublishedYear(int publishedYear) {
-        this.publishedYear = publishedYear;
-    }
-
-    public List<Genre> getGenres() {
+    public List<String> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<Genre> genres) {
+    public void setGenres(List<String> genres) {
         this.genres = genres;
     }
 
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public List<String> getStudios() {
+        return studios;
+    }
+
+    public void setStudios(List<String> studios) {
+        this.studios = studios;
+    }
+
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        Game game = (Game) obj;
-        return publishedYear == game.publishedYear && id.equals(game.id) && genres.equals(game.genres) && title.equals(game.title) && Double.compare(price, game.price) == 0 && Arrays.equals(studios.toArray(), game.studios.toArray());
+        Game game = (Game) o;
+        return Double.compare(game.price, price) == 0 && id.equals(game.id) && name.equals(game.name) && Arrays.equals(genres.toArray(), game.genres.toArray()) && Arrays.equals(studios.toArray(), game.studios.toArray());
     }
 
     @Override
     public int hashCode() {
         int result = id.hashCode();
-        result = 31 * result + title.hashCode();
-        result = 31 * result + Arrays.hashCode(studios.toArray());
-        result = 31 * result + publishedYear;
+        result = 31 * result + name.hashCode();
         result = 31 * result + Arrays.hashCode(genres.toArray());
-        long temp = Double.doubleToLongBits(price);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + Double.hashCode(price);
+        result = 31 * result + Arrays.hashCode(studios.toArray());
         return result;
     }
 
     @Override
     public String toString() {
-        return "Game{" +
+        return "SportEquipment{" +
                 "id=" + id +
-                ", title='" + title + '\'' +
-                ", studios=" + studios +
-                ", publishedYear=" + publishedYear +
+                ", name='" + name + '\'' +
+                ", genres=" + Arrays.toString(genres.toArray()) +
+                ", studios=" + Arrays.toString(studios.toArray()) +
+                ", price=" + price +
                 '}';
     }
 }
